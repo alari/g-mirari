@@ -50,12 +50,17 @@ public class AtomsManager implements ApplicationContextAware {
         prepareExtendedInfo(data);
 
         if (strategy == null) {
-            for (AtomStrategy s : strategyDiscoverySequence)
-                if (s.isContentSupported(data)) {
-                    strategy = s;
-                    atom.setType(s.getName());
-                    break;
+            for (AtomStrategy s : strategyDiscoverySequence) {
+                try {
+                    if (s.isContentSupported(data)) {
+                        strategy = s;
+                        atom.setType(s.getName());
+                        break;
+                    }
+                } catch (Exception e) {
+                    continue;
                 }
+            }
             if (strategy == null) {
                 throw new NoTypeStrategyFound();
             }
@@ -68,8 +73,14 @@ public class AtomsManager implements ApplicationContextAware {
 
     private void prepareExtendedInfo(Atom.Push data) {
         if (data.getExternalUrl() != null && !data.getExternalUrl().isEmpty()) {
+            String externalUrl = data.getExternalUrl();
+            if (externalUrl.startsWith("//")) {
+                externalUrl = "http:".concat(externalUrl);
+            } else if (!externalUrl.startsWith("http://") && !externalUrl.startsWith("https://")) {
+                externalUrl = "http://".concat(externalUrl);
+            }
             try {
-                data.setUrl(new URL(data.getExternalUrl()));
+                data.setUrl(new URL(externalUrl));
             } catch (MalformedURLException e) {
                 data.setExternalUrl(null);
             }

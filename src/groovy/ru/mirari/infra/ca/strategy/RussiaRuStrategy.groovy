@@ -1,8 +1,8 @@
 package ru.mirari.infra.ca.strategy
 
-import ru.mirari.infra.ca.AtomStrategy
 import org.springframework.stereotype.Component
 import ru.mirari.infra.ca.Atom
+import ru.mirari.infra.ca.AtomStrategy
 
 /**
  * @author alari
@@ -19,6 +19,6 @@ class RussiaRuStrategy extends AtomStrategy {
     void setContent(Atom atom, Atom.Push data) {
         //http://russia.ru/video/diskurs_12854/
         // TODO: validate characters in external id!
-        atom.externalId = data.url.path.substring(7, data.url.path.size()-1)
+        atom.externalId = data.url.path.substring(7, data.url.path.size() - 1)
     }
 }

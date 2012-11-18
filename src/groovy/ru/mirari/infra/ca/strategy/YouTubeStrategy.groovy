@@ -1,7 +1,6 @@
 package ru.mirari.infra.ca.strategy
 
-@Grab("org.apache.httpcomponents:httpclient:4.2.1")
-import org.apache.http.client.utils.URLEncodedUtils
+@Grab("org.apache.httpcomponents:httpclient:4.2.1") import org.apache.http.client.utils.URLEncodedUtils
 import org.springframework.stereotype.Component
 import ru.mirari.infra.ca.Atom
 import ru.mirari.infra.ca.AtomStrategy

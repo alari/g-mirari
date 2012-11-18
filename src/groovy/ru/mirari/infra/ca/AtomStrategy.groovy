@@ -10,9 +10,9 @@ abstract class AtomStrategy {
     private volatile String name;
 
     final public String getName() {
-        if(name == null) {
+        if (name == null) {
             synchronized (this) {
-                if(name == null) {
+                if (name == null) {
                     name = getClass().simpleName - "Strategy"
                     name = name.charAt(0).toLowerCase().toString() + name.substring(1)
                 }
@@ -26,17 +26,20 @@ abstract class AtomStrategy {
     }
 
     final void update(Atom atom, final Atom.Push data) {
-        if(atom.id && data.id && data.id != atom.id) {
+        if (atom.id && data.id && data.id != atom.id) {
             throw new IllegalAccessException("Trying to set data to an atom with different id")
         }
-        if(data.id) atom.id = data.id
+        if (data.id) atom.id = data.id
         atom.title = data.title
         atom.lastUpdated = new Date()
         setContent(atom, data)
     }
+
     abstract void setContent(Atom atom, final Atom.Push data);
 
     void forUpdate(Atom atom) {}
+
     void forRender(Atom atom) {}
+
     void delete(Atom atom) {}
 }

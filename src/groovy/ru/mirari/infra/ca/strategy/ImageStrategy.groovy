@@ -1,14 +1,10 @@
 package ru.mirari.infra.ca.strategy
 
-import org.springframework.stereotype.Component
-import ru.mirari.infra.ca.AtomStrategy
-import ru.mirari.infra.ca.Atom
-import ru.mirari.infra.image.ImageHolder
 import org.springframework.beans.factory.annotation.Autowired
-import ru.mirari.infra.image.ImageStorageService
-import ru.mirari.infra.image.ImageFormat
-import ru.mirari.infra.image.ImageType
-import ru.mirari.infra.image.ImageCropPolicy
+import org.springframework.stereotype.Component
+import ru.mirari.infra.ca.Atom
+import ru.mirari.infra.ca.AtomStrategy
+import ru.mirari.infra.image.*
 
 /**
  * @author alari
@@ -69,7 +65,7 @@ class ImageStrategy extends AtomStrategy {
 
     @Override
     void setContent(Atom atom, Atom.Push data) {
-        if(data.file) {
+        if (data.file) {
             ImageHolder holder = getImageHolder(atom)
             imageStorageService.format(holder, data.file)
             atom.title = data.originalFilename.substring(0, data.originalFilename.lastIndexOf("."))
