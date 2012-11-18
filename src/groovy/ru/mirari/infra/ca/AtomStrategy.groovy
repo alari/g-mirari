@@ -26,6 +26,9 @@ abstract class AtomStrategy {
     }
 
     final void update(Atom atom, final Atom.Push data) {
+        if(atom.id && data.id && data.id != atom.id) {
+            throw new IllegalAccessException("Trying to set data to an atom with different id")
+        }
         if(data.id) atom.id = data.id
         atom.title = data.title
         atom.lastUpdated = new Date()

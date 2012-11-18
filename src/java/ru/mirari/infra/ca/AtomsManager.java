@@ -50,13 +50,12 @@ public class AtomsManager implements ApplicationContextAware {
         prepareExtendedInfo(data);
 
         if (strategy == null) {
-            for (AtomStrategy s : strategyDiscoverySequence) {
+            for (AtomStrategy s : strategyDiscoverySequence)
                 if (s.isContentSupported(data)) {
                     strategy = s;
                     atom.setType(s.getName());
                     break;
                 }
-            }
             if (strategy == null) {
                 throw new NoTypeStrategyFound();
             }
