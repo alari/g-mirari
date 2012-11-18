@@ -44,6 +44,10 @@ grails.project.dependency.resolution = {
 
         compile 'org.pegdown:pegdown:latest.release'
         compile "org.jsoup:jsoup:latest.release"
+
+        compile "com.fasterxml.jackson.core:jackson-databind:latest.release"
+        compile "com.fasterxml.jackson.core:jackson-annotations:latest.release"
+        compile "com.fasterxml.jackson.core:jackson-core:latest.release"
     }
 
     plugins {
