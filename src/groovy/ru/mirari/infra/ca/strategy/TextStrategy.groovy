@@ -4,7 +4,8 @@ import ru.mirari.infra.ca.AtomStrategy
 import org.springframework.stereotype.Component
 import ru.mirari.infra.ca.Atom
 import org.springframework.beans.factory.annotation.Autowired
-import ru.mirari.infra.text.TextProcessUtil
+
+import ru.mirari.infra.text.TextProcessService
 
 /**
  * @author alari
@@ -12,7 +13,7 @@ import ru.mirari.infra.text.TextProcessUtil
  */
 @Component
 class TextStrategy extends AtomStrategy {
-    @Autowired private TextProcessUtil textProcessUtil
+    @Autowired private TextProcessService textProcessService
 
     @Override
     boolean isContentSupported(Atom.Push data) {
@@ -26,7 +27,7 @@ class TextStrategy extends AtomStrategy {
     void setContent(Atom atom, Atom.Push data) {
         if(data.file) {
             if(data.originalFilename.endsWith("html") || data.originalFilename.endsWith("htm")) {
-                data.text = textProcessUtil.htmlToMarkdown(data.file.text)
+                data.text = textProcessService.htmlToMarkdown(data.file.text)
             } else {
                 data.text = data.file.text
             }
@@ -39,6 +40,6 @@ class TextStrategy extends AtomStrategy {
 
     @Override
     void forRender(Atom atom) {
-        atom.text = textProcessUtil.markdownToHtml(atom.text)
+        atom.text = textProcessService.markdownToHtml(atom.text)
     }
 }

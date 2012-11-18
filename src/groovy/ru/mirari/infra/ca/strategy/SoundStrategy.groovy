@@ -25,7 +25,9 @@ class SoundStrategy extends AtomStrategy {
     String filesBucket = "mirarisounds"
 
     private FileHolder getFileHolder(Atom atom) {
-        new BasicFileHolder(atom.id, filesBucket)
+        FileHolder holder = new BasicFileHolder(atom.id, filesBucket)
+        if(atom.sounds) holder.fileNames = atom.sounds.values()
+        holder
     }
 
     @Override
@@ -59,7 +61,6 @@ class SoundStrategy extends AtomStrategy {
     void delete(Atom atom) {
         if(atom.sounds && atom.sounds.size()) {
             FileHolder holder = getFileHolder(atom)
-            holder.fileNames = atom.sounds.values()
             fileStorageService.delete(holder)
             atom.sounds = null
         }
