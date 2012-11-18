@@ -1,0 +1,6 @@
+[submodule "infra-file-storage"]
+	path = infra-file-storage
+	url = git@github.com:alari/infra-file-storage.git
+[submodule "infra-images"]
+	path = infra-images
+	url = git@github.com:alari/infra-images.git

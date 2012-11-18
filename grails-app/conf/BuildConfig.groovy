@@ -2,9 +2,12 @@ grails.servlet.version = "3.0" // Change depending on target container complianc
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-grails.project.target.level = 1.6
-grails.project.source.level = 1.6
+grails.project.target.level = 1.7
+grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+
+grails.plugin.location.'infra-file-storage' = "infra-file-storage"
+grails.plugin.location.'infra-images' = "infra-images"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
