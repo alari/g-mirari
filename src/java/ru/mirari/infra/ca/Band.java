@@ -7,6 +7,9 @@ import java.util.List;
  * @since 11/19/12 1:23 AM
  */
 public interface Band {
+    public String getId();
+    public void setId(String id);
+
     String getStyle();
     void setStyle(String style);
 

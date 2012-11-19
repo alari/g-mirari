@@ -10,6 +10,7 @@ import java.util.List;
  * @since 11/19/12 1:29 AM
  */
 public class BandPOJO implements Band {
+    private String id;
     private String style;
     private String type;
     private List<Atom> atoms;
@@ -36,5 +37,13 @@ public class BandPOJO implements Band {
 
     public void setAtoms(List<Atom> atoms) {
         this.atoms = atoms;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

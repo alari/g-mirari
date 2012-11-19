@@ -1,8 +1,10 @@
 package ru.mirari.infra.ca
 
 import grails.plugin.spock.IntegrationSpec
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import ru.mirari.infra.ca.impl.AtomPOJO
+import spock.lang.Stepwise
 
+@Stepwise
 class ChainsManagerSpec extends IntegrationSpec {
 
     ChainsManager chainsManager
@@ -13,13 +15,42 @@ class ChainsManagerSpec extends IntegrationSpec {
     def cleanup() {
     }
 
+    private Atom.Push getData() {
+        new AtomPOJO.Push(
+                title: "test text",
+                text: "a"
+        )
+    }
+
     void "test autowired"() {
         expect:
         chainsManager != null
     }
 
-    void "test to be done"() {
-        expect:
-        thrown(NotImplementedException)
+    void "pushes atom into clean chain"() {
+        given:
+        Atom.Push data = getData()
+        Chain chain
+        Atom atom
+
+        when:
+        chain = chainsManager.buildChain()
+        atom = chainsManager.pushAtom(chain, data)
+
+        then:
+        atom != null
+        atom.type == "text"
+        atom.text == data.text
+        chain.bands.size() == 1
+        chain.bands[0].atoms[0] == atom
+        atom.id != null
+        chainsManager.getAtom(chain, atom.id) == atom
+
+        when: "we can remove!"
+        chainsManager.removeAtom(chain, atom.id)
+
+        then:
+        chain.bands.size() == 0
+        chainsManager.getAtom(chain, atom.id) == null
     }
 }

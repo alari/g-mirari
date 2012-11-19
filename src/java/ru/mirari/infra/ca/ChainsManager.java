@@ -1,6 +1,7 @@
 package ru.mirari.infra.ca;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.mirari.infra.ca.ex.CreativeAtomException;
@@ -19,9 +20,12 @@ public class ChainsManager {
     private Class<? extends Chain> chainClass = ChainPOJO.class;
     private Class<? extends Band> bandClass = BandPOJO.class;
 
+    @Autowired
     private AtomsManager atomsManager;
 
     final private ObjectMapper mapper = new ObjectMapper();
+
+    private int idLength = 8;
 
     public Chain forJson(String json) throws IOException{
         return mapper.readValue(json, chainClass);
@@ -29,6 +33,53 @@ public class ChainsManager {
 
     public String toJson(Chain chain) throws IOException{
         return mapper.writeValueAsString(chain);
+    }
+
+    public Chain buildChain() throws IllegalAccessException, InstantiationException {
+        return chainClass.newInstance();
+    }
+
+    private Band createBand(Chain chain) throws IllegalAccessException, InstantiationException {
+        Band band = bandClass.newInstance();
+        band.setId(getUniqueBandId(chain));
+        return band;
+    }
+
+    private String getUniqueAtomId(Chain chain) {
+        boolean idNotUnique = true;
+        String id = null;
+        while (idNotUnique) {
+            id = RandomStringUtils.randomAlphanumeric(idLength);
+            idNotUnique = false;
+            if(chain.getBands() != null) {
+                for(Band b : chain.getBands()) if(b.getAtoms() != null) {
+                    for(Atom a : b.getAtoms()) {
+                        if(a.getId().equals(id)) {
+                            idNotUnique = true;
+                            break;
+                        }
+                    }
+                    if(idNotUnique) break;
+                }
+            }
+        }
+        return id;
+    }
+
+    private String getUniqueBandId(Chain chain) {
+        boolean idNotUnique = true;
+        String id = null;
+        while(idNotUnique) {
+            id = RandomStringUtils.randomAlphanumeric(idLength);
+            idNotUnique = false;
+            if(chain.getBands() != null) {
+                for(Band b : chain.getBands()) if(b.getId().equals(id)) {
+                    idNotUnique = true;
+                    break;
+                }
+            }
+        }
+        return id;
     }
 
     public void addAtom(Chain chain, Atom atom) throws IllegalAccessException, InstantiationException {
@@ -43,7 +94,7 @@ public class ChainsManager {
             }
         }
         if(band == null) {
-            band = bandClass.newInstance();
+            band = createBand(chain);
             band.setType(atom.getType());
             chain.getBands().add(band);
         }
@@ -53,9 +104,11 @@ public class ChainsManager {
         band.getAtoms().add(atom);
     }
 
-    public void pushAtom(Chain chain, Atom.Push data) throws CreativeAtomException, InstantiationException, IllegalAccessException {
+    public Atom pushAtom(Chain chain, Atom.Push data) throws CreativeAtomException, InstantiationException, IllegalAccessException {
+        data.setId(getUniqueAtomId(chain));
         Atom atom = atomsManager.build(data);
         addAtom(chain, atom);
+        return atom;
     }
 
     public Atom getAtom(Chain chain, String id) {
