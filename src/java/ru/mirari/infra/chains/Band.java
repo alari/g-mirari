@@ -1,4 +1,6 @@
-package ru.mirari.infra.ca;
+package ru.mirari.infra.chains;
+
+import ru.mirari.infra.ca.Atom;
 
 import java.util.List;
 

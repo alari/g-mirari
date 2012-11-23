@@ -1,8 +1,11 @@
-package ru.mirari.infra.ca
+package ru.mirari.infra.chains
 
 import grails.plugin.spock.IntegrationSpec
 import ru.mirari.infra.ca.impl.AtomPOJO
 import spock.lang.Stepwise
+import ru.mirari.infra.chains.ChainsManager
+import ru.mirari.infra.chains.Chain
+import ru.mirari.infra.ca.Atom
 
 @Stepwise
 class ChainsManagerSpec extends IntegrationSpec {

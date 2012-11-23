@@ -1,12 +1,14 @@
-package ru.mirari.infra.ca;
+package ru.mirari.infra.chains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.mirari.infra.ca.Atom;
+import ru.mirari.infra.ca.AtomsManager;
 import ru.mirari.infra.ca.ex.CreativeAtomException;
-import ru.mirari.infra.ca.impl.BandPOJO;
-import ru.mirari.infra.ca.impl.ChainPOJO;
+import ru.mirari.infra.chains.impl.BandPOJO;
+import ru.mirari.infra.chains.impl.ChainPOJO;
 
 import java.io.IOException;
 import java.util.LinkedList;
