@@ -1,17 +1,18 @@
 package ru.mirari.infra.chains;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.mirari.infra.ca.Atom;
 import ru.mirari.infra.ca.AtomsManager;
+import ru.mirari.infra.ca.StringIdContainer;
 import ru.mirari.infra.ca.ex.CreativeAtomException;
+import ru.mirari.infra.chains.ex.NotFoundInChainException;
 import ru.mirari.infra.chains.impl.BandPOJO;
 import ru.mirari.infra.chains.impl.ChainPOJO;
 
-import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author alari
@@ -25,87 +26,59 @@ public class ChainsManager {
     @Autowired
     private AtomsManager atomsManager;
 
-    final private ObjectMapper mapper = new ObjectMapper();
-
     private int idLength = 8;
 
-    public Chain forJson(String json) throws IOException{
-        return mapper.readValue(json, chainClass);
-    }
-
-    public String toJson(Chain chain) throws IOException{
-        return mapper.writeValueAsString(chain);
-    }
-
+    /**
+     * Builds a new Chain object
+     *
+     * @return instance of Chain
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     public Chain buildChain() throws IllegalAccessException, InstantiationException {
         return chainClass.newInstance();
     }
 
-    private Band createBand(Chain chain) throws IllegalAccessException, InstantiationException {
-        Band band = bandClass.newInstance();
-        band.setId(getUniqueBandId(chain));
-        return band;
-    }
-
-    private String getUniqueAtomId(Chain chain) {
-        boolean idNotUnique = true;
-        String id = null;
-        while (idNotUnique) {
-            id = RandomStringUtils.randomAlphanumeric(idLength);
-            idNotUnique = false;
-            if(chain.getBands() != null) {
-                for(Band b : chain.getBands()) if(b.getAtoms() != null) {
-                    for(Atom a : b.getAtoms()) {
-                        if(a.getId().equals(id)) {
-                            idNotUnique = true;
-                            break;
-                        }
-                    }
-                    if(idNotUnique) break;
-                }
-            }
-        }
-        return id;
-    }
-
-    private String getUniqueBandId(Chain chain) {
-        boolean idNotUnique = true;
-        String id = null;
-        while(idNotUnique) {
-            id = RandomStringUtils.randomAlphanumeric(idLength);
-            idNotUnique = false;
-            if(chain.getBands() != null) {
-                for(Band b : chain.getBands()) if(b.getId().equals(id)) {
-                    idNotUnique = true;
-                    break;
-                }
-            }
-        }
-        return id;
-    }
-
+    /**
+     * Adds an atom into a chain, possibly creates a new band object
+     *
+     * @param chain
+     * @param atom
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     public void addAtom(Chain chain, Atom atom) throws IllegalAccessException, InstantiationException {
-        if(chain.getBands() == null) {
+        if (chain.getBands() == null) {
             chain.setBands(new LinkedList<Band>());
         }
         Band band = null;
-        if(chain.getBands().size()>0) {
-            band = chain.getBands().get(chain.getBands().size()-1);
-            if(!band.getType().equals(atom.getType())) {
+        if (chain.getBands().size() > 0) {
+            band = chain.getBands().get(chain.getBands().size() - 1);
+            if (!band.getType().equalsIgnoreCase(atom.getType())) {
                 band = null;
             }
         }
-        if(band == null) {
+        if (band == null) {
             band = createBand(chain);
             band.setType(atom.getType());
             chain.getBands().add(band);
         }
-        if(band.getAtoms() == null) {
+        if (band.getAtoms() == null) {
             band.setAtoms(new LinkedList<Atom>());
         }
         band.getAtoms().add(atom);
     }
 
+    /**
+     * Builds an atom from a user-provided data and adds it into a chain
+     *
+     * @param chain
+     * @param data
+     * @return a new built atom (already injected into a chain)
+     * @throws CreativeAtomException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public Atom pushAtom(Chain chain, Atom.Push data) throws CreativeAtomException, InstantiationException, IllegalAccessException {
         data.setId(getUniqueAtomId(chain));
         Atom atom = atomsManager.build(data);
@@ -113,18 +86,274 @@ public class ChainsManager {
         return atom;
     }
 
-    public Atom getAtom(Chain chain, String id) {
-        for(Band b : chain.getBands()) for(Atom a : b.getAtoms()) if(a.getId().equals(id)) return a;
+    /**
+     * Builds and pushes an atom into specified band
+     *
+     * @param chain
+     * @param data
+     * @param bandId
+     * @return
+     */
+    public Atom pushAtom(Chain chain, Atom.Push data, String bandId) {
         return null;
     }
 
-    public void removeAtom(Chain chain, String id) {
-        for(Band b : chain.getBands()) for(Atom a : b.getAtoms()) if(a.getId().equals(id)) {
-            b.getAtoms().remove(a);
-            if(b.getAtoms().size() == 0) {
-                chain.getBands().remove(b);
+    /**
+     * Retrieves an atom from chain by id
+     *
+     * @param chain
+     * @param id
+     * @return
+     */
+    public Atom getAtom(Chain chain, String id) throws NotFoundInChainException {
+        for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) if (a.getId().equalsIgnoreCase(id)) return a;
+        throw new NotFoundInChainException();
+    }
+
+    /**
+     * Removes an atom from chain by its id
+     *
+     * @param chain
+     * @param id
+     */
+    public void removeAtom(Chain chain, String id) throws NotFoundInChainException {
+        for (Band b : chain.getBands())
+            for (Atom a : b.getAtoms())
+                if (a.getId().equalsIgnoreCase(id)) {
+                    b.getAtoms().remove(a);
+                    if (b.getAtoms().size() == 0) {
+                        chain.getBands().remove(b);
+                    }
+                    return;
+                }
+        throw new NotFoundInChainException();
+    }
+
+    /**
+     * Deletes atom contents and removes it from a chain
+     *
+     * @param chain
+     * @param id
+     * @throws CreativeAtomException
+     */
+    public void deleteAtom(Chain chain, String id) throws CreativeAtomException {
+        atomsManager.delete(getAtom(chain, id));
+        removeAtom(chain, id);
+    }
+
+    /**
+     * Prepares a chain to render update
+     *
+     * @param chain
+     * @throws CreativeAtomException
+     */
+    public void forUpdate(Chain chain) throws CreativeAtomException {
+        for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) atomsManager.forUpdate(a);
+    }
+
+    /**
+     * Prepares a chain for common render
+     *
+     * @param chain
+     * @throws CreativeAtomException
+     */
+    public void forRender(Chain chain) throws CreativeAtomException {
+        for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) atomsManager.forRender(a);
+    }
+
+    /**
+     * Deletes all chain atoms contents
+     *
+     * @param chain
+     * @throws CreativeAtomException
+     */
+    public void delete(Chain chain) throws CreativeAtomException {
+        for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) atomsManager.delete(a);
+    }
+
+    /**
+     * Returns a band by its id
+     *
+     * @param chain
+     * @param bandId
+     * @return
+     * @throws NotFoundInChainException
+     */
+    public Band getBand(Chain chain, String bandId) throws NotFoundInChainException {
+        for (Band b : chain.getBands()) if (b.getId().equalsIgnoreCase(bandId)) return b;
+        throw new NotFoundInChainException();
+    }
+
+    /**
+     * Returns a band atom belongs to
+     *
+     * @param chain
+     * @param atomId
+     * @return
+     * @throws ru.mirari.infra.chains.ex.NotFoundInChainException
+     */
+    public Band getAtomBand(Chain chain, String atomId) throws NotFoundInChainException {
+        for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) if (a.getId().equalsIgnoreCase(atomId)) return b;
+        throw new NotFoundInChainException();
+    }
+
+    /**
+     * Moves an atom to the specified position in its band
+     *
+     * @param chain
+     * @param atomId
+     * @param moveToPosition
+     * @throws NotFoundInChainException
+     */
+    public void moveInBand(Chain chain, String atomId, int moveToPosition) throws NotFoundInChainException {
+        Band band = getAtomBand(chain, atomId);
+        moveInList(band.getAtoms(), atomId, moveToPosition);
+    }
+
+    /**
+     * Moves a band to the specified position in a chain
+     *
+     * @param chain
+     * @param bandId
+     * @param moveToPosition
+     */
+    public void moveBand(Chain chain, String bandId, int moveToPosition) {
+        moveInList(chain.getBands(), bandId, moveToPosition);
+    }
+
+
+    /**
+     * Moves an atom from band to band, places it to the end of a target band
+     *
+     * @param chain
+     * @param atomId
+     * @param bandId
+     */
+    public void moveToBand(Chain chain, String atomId, String bandId) {
+
+    }
+
+    /**
+     * Moves an atom to specified position in a target band, splits a target if it's of the wrong type
+     *
+     * @param chain
+     * @param atomId
+     * @param bandId
+     * @param moveToPosition
+     */
+    public void moveToBand(Chain chain, String atomId, String bandId, int moveToPosition) {
+
+    }
+
+    /**
+     * Moves an atom in a chain
+     *
+     * @param chain
+     * @param atomId
+     * @param moveToPosition
+     */
+    public void moveAtom(Chain chain, String atomId, int moveToPosition) {
+
+    }
+
+    /**
+     * Routine to move objects in list
+     *
+     * @param list
+     * @param id
+     * @param moveToPosition
+     * @param <T>
+     */
+    private <T extends StringIdContainer> void moveInList(List<T> list, String id, int moveToPosition) {
+        if (moveToPosition < 0) moveToPosition = 0;
+        if (moveToPosition >= list.size()) moveToPosition = list.size() - 1;
+
+        int position = 0;
+        T objectToMove = null;
+
+        for (T o : list) {
+            if (o.getId().equalsIgnoreCase(id)) {
+                objectToMove = o;
+                break;
             }
-            return;
+            ++position;
         }
+        if (position == moveToPosition) return;
+
+        list.remove(position);
+        list.add(moveToPosition, objectToMove);
+    }
+
+    /**
+     * Generates a random id
+     * @return
+     */
+    private String randomId() {
+        return RandomStringUtils.randomAlphanumeric(idLength).toLowerCase();
+    }
+
+    /**
+     * Builds a new Band object to place into a Chain. Unique ID is given
+     *
+     * @param chain
+     * @return band object to place into chain
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    private Band createBand(Chain chain) throws IllegalAccessException, InstantiationException {
+        Band band = bandClass.newInstance();
+        band.setId(getUniqueBandId(chain));
+        return band;
+    }
+
+    /**
+     * Returns a unique id for a new atom in chain
+     *
+     * @param chain to place an atom in
+     * @return unique id
+     */
+    private String getUniqueAtomId(Chain chain) {
+        boolean idNotUnique = true;
+        String id = null;
+        while (idNotUnique) {
+            id = randomId();
+            idNotUnique = false;
+            if (chain.getBands() != null) {
+                for (Band b : chain.getBands())
+                    if (b.getAtoms() != null) {
+                        for (Atom a : b.getAtoms()) {
+                            if (a.getId().equalsIgnoreCase(id)) {
+                                idNotUnique = true;
+                                break;
+                            }
+                        }
+                        if (idNotUnique) break;
+                    }
+            }
+        }
+        return id;
+    }
+
+    /**
+     * Provides unique band id (in chain scope)
+     *
+     * @param chain
+     * @return band id
+     */
+    private String getUniqueBandId(Chain chain) {
+        boolean idNotUnique = true;
+        String id = null;
+        while (idNotUnique) {
+            id = randomId();
+            idNotUnique = false;
+            if (chain.getBands() != null) {
+                for (Band b : chain.getBands())
+                    if (b.getId().equalsIgnoreCase(id)) {
+                        idNotUnique = true;
+                        break;
+                    }
+            }
+        }
+        return id;
     }
 }

@@ -2,7 +2,6 @@ package ru.mirari.infra.chains.impl;
 
 import ru.mirari.infra.chains.Band;
 import ru.mirari.infra.chains.Chain;
-import ru.mirari.infra.chains.Chain;
 
 import java.util.List;
 

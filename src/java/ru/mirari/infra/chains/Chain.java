@@ -8,5 +8,6 @@ import java.util.List;
  */
 public interface Chain {
     List<Band> getBands();
+
     void setBands(List<Band> bands);
 }

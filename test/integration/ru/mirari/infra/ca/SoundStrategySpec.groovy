@@ -1,9 +1,9 @@
 package ru.mirari.infra.ca
 
 import grails.plugin.spock.IntegrationSpec
+import org.apache.commons.lang.RandomStringUtils
 import org.springframework.core.io.ClassPathResource
 import ru.mirari.infra.ca.impl.AtomPOJO
-import org.apache.commons.lang.RandomStringUtils
 import spock.lang.Stepwise
 
 @Stepwise

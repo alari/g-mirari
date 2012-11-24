@@ -9,14 +9,11 @@ import java.util.Map;
  * @author alari
  * @since 11/13/12 11:41 PM
  */
-public interface Atom {
+public interface Atom extends StringIdContainer {
     public String getTitle();
 
     public void setTitle(String title);
 
-    public String getId();
-
-    public void setId(String id);
 
     public String getType();
 

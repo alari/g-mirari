@@ -29,6 +29,12 @@ public class AtomsManager implements ApplicationContextAware {
     private Map<String, AtomStrategy> strategies = new TreeMap<String, AtomStrategy>();
     private LinkedList<AtomStrategy> strategyDiscoverySequence = new LinkedList<AtomStrategy>();
 
+    /**
+     * Caches strategy beans for further use
+     *
+     * @param applicationContext app main context
+     * @throws BeansException
+     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         for (Map.Entry<String, AtomStrategy> e : applicationContext.getBeansOfType(AtomStrategy.class).entrySet()) {
@@ -39,6 +45,15 @@ public class AtomsManager implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Builds an Atom from user's JSON push
+     *
+     * @param data user provided possibly untyped build data
+     * @return Atom built
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws CreativeAtomException
+     */
     public Atom build(Atom.Push data) throws IllegalAccessException, InstantiationException, CreativeAtomException {
         if (data == null) {
             throw new NullPointerException();
@@ -71,6 +86,11 @@ public class AtomsManager implements ApplicationContextAware {
         return atom;
     }
 
+    /**
+     * Prepares atom extended info used by strategies to understand the content
+     *
+     * @param data user given data
+     */
     private void prepareExtendedInfo(Atom.Push data) {
         if (data.getExternalUrl() != null && !data.getExternalUrl().isEmpty()) {
             String externalUrl = data.getExternalUrl();
@@ -94,6 +114,13 @@ public class AtomsManager implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Returns strategy by atom according to atom's type
+     *
+     * @param atom to retrieve strategy for
+     * @return strategy
+     * @throws NoTypeStrategyFound if strategy for atom's type is not found
+     */
     private AtomStrategy getStrategy(final Atom atom) throws NoTypeStrategyFound {
         AtomStrategy strategy = strategies.get(atom.getType());
         if (strategy == null) {
@@ -102,19 +129,44 @@ public class AtomsManager implements ApplicationContextAware {
         return strategy;
     }
 
+    /**
+     * Updates atom with user provided push data
+     *
+     * @param atom to be updated
+     * @param data to update with
+     * @throws CreativeAtomException
+     */
     public void update(Atom atom, Atom.Push data) throws CreativeAtomException {
         prepareExtendedInfo(data);
         getStrategy(atom).update(atom, data);
     }
 
+    /**
+     * Prepares atom content to render update form
+     *
+     * @param atom to be updated
+     * @throws CreativeAtomException
+     */
     public void forUpdate(Atom atom) throws CreativeAtomException {
         getStrategy(atom).forUpdate(atom);
     }
 
+    /**
+     * Prepares atom content to render to user
+     *
+     * @param atom to be rendered
+     * @throws CreativeAtomException
+     */
     public void forRender(Atom atom) throws CreativeAtomException {
         getStrategy(atom).forRender(atom);
     }
 
+    /**
+     * Processes atom content deleting
+     *
+     * @param atom to be deleted
+     * @throws CreativeAtomException
+     */
     public void delete(Atom atom) throws CreativeAtomException {
         getStrategy(atom).delete(atom);
     }

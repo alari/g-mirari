@@ -1,9 +1,9 @@
 package ru.mirari.infra.ca
 
 import grails.plugin.spock.IntegrationSpec
-import spock.lang.Stepwise
-import ru.mirari.infra.ca.impl.AtomPOJO
 import ru.mirari.infra.ca.ex.NoTypeStrategyFound
+import ru.mirari.infra.ca.impl.AtomPOJO
+import spock.lang.Stepwise
 
 @Stepwise
 class LinkStrategySpec extends IntegrationSpec {

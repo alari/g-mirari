@@ -1,8 +1,8 @@
 package ru.mirari.infra.ca
 
 import grails.plugin.spock.IntegrationSpec
-import spock.lang.Stepwise
 import ru.mirari.infra.ca.impl.AtomPOJO
+import spock.lang.Stepwise
 
 @Stepwise
 class RussiaRuSpec extends IntegrationSpec {
