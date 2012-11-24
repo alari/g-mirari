@@ -33,6 +33,10 @@ public class AtomPOJO implements Atom {
         private URL url;
         private String fileType;
 
+        public String toString() {
+            return "Atom.Push:"+this.getId();
+        }
+
         public File getFile() {
             return file;
         }
@@ -72,6 +76,10 @@ public class AtomPOJO implements Atom {
         public void setFileType(String fileType) {
             this.fileType = fileType;
         }
+    }
+
+    public String toString() {
+        return "Atom:"+id;
     }
 
     public String getTitle() {

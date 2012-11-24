@@ -4,6 +4,7 @@ target
 .idea
 .idea/
 stacktrace.log
+coverage-error.log
 out/
 .classpath
 .project

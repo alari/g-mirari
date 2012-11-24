@@ -239,7 +239,9 @@ public class ChainsManager {
      */
     public void moveToBand(Chain chain, String atomId, String bandId) throws NotFoundInChainException, IllegalAccessException, InstantiationException {
         Band sourceBand = getAtomBand(chain, atomId);
-        if (sourceBand.getId().equalsIgnoreCase(bandId)) return;
+        if (sourceBand.getId().equalsIgnoreCase(bandId)) {
+            moveInList(sourceBand.getAtoms(), atomId, sourceBand.getAtoms().size() - 1);
+        }
 
         Band targetBand = getBand(chain, bandId);
         Atom atom = null;
@@ -302,8 +304,9 @@ public class ChainsManager {
 
         Band targetBand = getBand(chain, bandId);
         // Moving right after the target band -- degrade
-        if (targetBand.getAtoms().size() >= moveToPosition) {
+        if (targetBand.getAtoms().size() <= moveToPosition) {
             moveToBand(chain, atomId, bandId);
+            return;
         }
 
         // We actually need to move
@@ -312,6 +315,9 @@ public class ChainsManager {
             if (a.getId().equalsIgnoreCase(atomId)) {
                 atom = a;
             }
+        }
+        if (atom == null) {
+            throw new NotFoundInChainException();
         }
         // Simple case
         if (targetBand.getType().equalsIgnoreCase(sourceBand.getType())) {
@@ -350,7 +356,7 @@ public class ChainsManager {
                 Band newBand;
                 if (sourceBand.getAtoms().size() == 1) {
                     newBand = sourceBand;
-                    chain.getBands().remove(newBand);
+                    chain.getBands().remove(sourceBand);
                 } else {
                     newBand = copyBand(chain, sourceBand);
                     sourceBand.getAtoms().remove(atom);
@@ -360,8 +366,8 @@ public class ChainsManager {
 
                 // Prepare second part of target band
                 Band secondTarget = copyBand(chain, targetBand);
-                secondTarget.getAtoms().addAll(targetBand.getAtoms().subList(moveToPosition, targetBand.getAtoms().size() - 1));
-                targetBand.setAtoms(targetBand.getAtoms().subList(0, moveToPosition - 1));
+                secondTarget.getAtoms().addAll(targetBand.getAtoms().subList(moveToPosition, targetBand.getAtoms().size()));
+                targetBand.setAtoms(targetBand.getAtoms().subList(0, moveToPosition));
 
                 List<Band> bands = new LinkedList<Band>();
                 bands.add(newBand);

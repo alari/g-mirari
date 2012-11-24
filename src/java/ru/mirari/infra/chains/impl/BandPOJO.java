@@ -15,6 +15,10 @@ public class BandPOJO implements Band {
     private String type;
     private List<Atom> atoms;
 
+    public String toString() {
+        return "Band:"+id;
+    }
+
     public String getStyle() {
         return style;
     }
