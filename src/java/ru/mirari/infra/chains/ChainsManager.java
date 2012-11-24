@@ -63,9 +63,6 @@ public class ChainsManager {
             band.setType(atom.getType());
             chain.getBands().add(band);
         }
-        if (band.getAtoms() == null) {
-            band.setAtoms(new LinkedList<Atom>());
-        }
         band.getAtoms().add(atom);
     }
 
@@ -94,8 +91,18 @@ public class ChainsManager {
      * @param bandId
      * @return
      */
-    public Atom pushAtom(Chain chain, Atom.Push data, String bandId) {
-        return null;
+    public Atom pushAtom(Chain chain, Atom.Push data, String bandId) throws CreativeAtomException, InstantiationException, IllegalAccessException {
+        data.setId(getUniqueAtomId(chain));
+        Atom atom = atomsManager.build(data);
+        Band band = getBand(chain, bandId);
+
+        if (band.getType().equalsIgnoreCase(atom.getType())) {
+            band.getAtoms().add(atom);
+        } else {
+            addAtom(chain, atom);
+            moveToBand(chain, atom.getId(), bandId);
+        }
+        return atom;
     }
 
     /**
@@ -191,6 +198,7 @@ public class ChainsManager {
      * @param atomId
      * @return
      * @throws ru.mirari.infra.chains.ex.NotFoundInChainException
+     *
      */
     public Band getAtomBand(Chain chain, String atomId) throws NotFoundInChainException {
         for (Band b : chain.getBands()) for (Atom a : b.getAtoms()) if (a.getId().equalsIgnoreCase(atomId)) return b;
@@ -229,8 +237,51 @@ public class ChainsManager {
      * @param atomId
      * @param bandId
      */
-    public void moveToBand(Chain chain, String atomId, String bandId) {
+    public void moveToBand(Chain chain, String atomId, String bandId) throws NotFoundInChainException, IllegalAccessException, InstantiationException {
+        Band sourceBand = getAtomBand(chain, atomId);
+        if (sourceBand.getId().equalsIgnoreCase(bandId)) return;
 
+        Band targetBand = getBand(chain, bandId);
+        Atom atom = null;
+        for (Atom a : sourceBand.getAtoms()) {
+            if (a.getId().equalsIgnoreCase(atomId)) {
+                atom = a;
+            }
+        }
+        // Simple case
+        if (targetBand.getType().equalsIgnoreCase(sourceBand.getType())) {
+            targetBand.getAtoms().add(atom);
+            sourceBand.getAtoms().remove(atom);
+            if (sourceBand.getAtoms().size() == 0) {
+                chain.getBands().remove(sourceBand);
+            }
+            // Less simple case, but still without position
+        } else {
+            int targetPosition = chain.getBands().indexOf(targetBand);
+            // Is the next band is of required type?
+            if (targetPosition < chain.getBands().size() - 1) {
+                Band nextBand = chain.getBands().get(targetPosition + 1);
+                if (nextBand.getType().equalsIgnoreCase(sourceBand.getType())) {
+                    sourceBand.getAtoms().remove(atom);
+                    nextBand.getAtoms().add(0, atom);
+                    if (sourceBand.getAtoms().size() == 0) {
+                        chain.getBands().remove(sourceBand);
+                    }
+                    return;
+                }
+            }
+            if (sourceBand.getAtoms().size() == 1) {
+                // Move atom with its band
+                chain.getBands().remove(sourceBand);
+                chain.getBands().add(targetPosition, sourceBand);
+            } else {
+                // Create a new band
+                Band newBand = copyBand(chain, sourceBand);
+                sourceBand.getAtoms().remove(atom);
+                newBand.getAtoms().add(atom);
+                chain.getBands().add(targetPosition + 1, newBand);
+            }
+        }
     }
 
     /**
@@ -241,8 +292,84 @@ public class ChainsManager {
      * @param bandId
      * @param moveToPosition
      */
-    public void moveToBand(Chain chain, String atomId, String bandId, int moveToPosition) {
+    public void moveToBand(Chain chain, String atomId, String bandId, int moveToPosition) throws NotFoundInChainException, InstantiationException, IllegalAccessException {
+        Band sourceBand = getAtomBand(chain, atomId);
+        // Target is a source -- degrade
+        if (sourceBand.getId().equalsIgnoreCase(bandId)) {
+            moveInBand(chain, atomId, moveToPosition);
+            return;
+        }
 
+        Band targetBand = getBand(chain, bandId);
+        // Moving right after the target band -- degrade
+        if (targetBand.getAtoms().size() >= moveToPosition) {
+            moveToBand(chain, atomId, bandId);
+        }
+
+        // We actually need to move
+        Atom atom = null;
+        for (Atom a : sourceBand.getAtoms()) {
+            if (a.getId().equalsIgnoreCase(atomId)) {
+                atom = a;
+            }
+        }
+        // Simple case
+        if (targetBand.getType().equalsIgnoreCase(sourceBand.getType())) {
+            // Just moving an atom
+            sourceBand.getAtoms().remove(atom);
+            if (sourceBand.getAtoms().size() == 0) {
+                chain.getBands().remove(sourceBand);
+            }
+            // Simply add and rearrange
+            targetBand.getAtoms().add(atom);
+            moveInList(targetBand.getAtoms(), atomId, moveToPosition);
+        } else {
+            // It's not so simple yet
+            if (moveToPosition == 0) {
+                // Check previous band
+                int targetPosition = chain.getBands().indexOf(targetBand);
+                if (targetPosition == 0) {
+                    // Placing before everything
+                    if (sourceBand.getAtoms().size() == 1) {
+                        chain.getBands().remove(sourceBand);
+                        chain.getBands().add(0, sourceBand);
+                    } else {
+                        sourceBand.getAtoms().remove(atom);
+                        Band newBand = copyBand(chain, sourceBand);
+                        newBand.getAtoms().add(atom);
+                        chain.getBands().add(0, newBand);
+                    }
+                } else {
+                    // Placing after the previous band
+                    Band previousBand = chain.getBands().get(targetPosition - 1);
+                    moveToBand(chain, atomId, previousBand.getId());
+                }
+            } else {
+                // It's inside the target band and we have to split it
+                // Prepare new band object
+                Band newBand;
+                if (sourceBand.getAtoms().size() == 1) {
+                    newBand = sourceBand;
+                    chain.getBands().remove(newBand);
+                } else {
+                    newBand = copyBand(chain, sourceBand);
+                    sourceBand.getAtoms().remove(atom);
+                    newBand.getAtoms().add(atom);
+                }
+                int targetPosition = chain.getBands().indexOf(targetBand);
+
+                // Prepare second part of target band
+                Band secondTarget = copyBand(chain, targetBand);
+                secondTarget.getAtoms().addAll(targetBand.getAtoms().subList(moveToPosition, targetBand.getAtoms().size() - 1));
+                targetBand.setAtoms(targetBand.getAtoms().subList(0, moveToPosition - 1));
+
+                List<Band> bands = new LinkedList<Band>();
+                bands.add(newBand);
+                bands.add(secondTarget);
+
+                chain.getBands().addAll(targetPosition + 1, bands);
+            }
+        }
     }
 
     /**
@@ -286,6 +413,7 @@ public class ChainsManager {
 
     /**
      * Generates a random id
+     *
      * @return
      */
     private String randomId() {
@@ -303,6 +431,7 @@ public class ChainsManager {
     private Band createBand(Chain chain) throws IllegalAccessException, InstantiationException {
         Band band = bandClass.newInstance();
         band.setId(getUniqueBandId(chain));
+        band.setAtoms(new LinkedList<Atom>());
         return band;
     }
 
@@ -355,5 +484,21 @@ public class ChainsManager {
             }
         }
         return id;
+    }
+
+    /**
+     * Makes a copy of a band in terms of its style, type and so on
+     *
+     * @param chain
+     * @param source
+     * @return a new band to be included into a chain
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private Band copyBand(Chain chain, Band source) throws InstantiationException, IllegalAccessException {
+        Band band = createBand(chain);
+        band.setType(source.getType());
+        band.setStyle(source.getStyle());
+        return band;
     }
 }

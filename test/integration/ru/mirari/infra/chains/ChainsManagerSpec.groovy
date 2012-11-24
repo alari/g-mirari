@@ -138,16 +138,20 @@ class ChainsManagerSpec extends IntegrationSpec {
         String id2 = threeBandChain.bands[1].atoms[0].id
         String id1
 
+        expect:
+        chain.bands.size() == 3
+        chain.bands[0].atoms.size() == 1
+
         when: "pushing an atom to the first band"
         chainsManager.pushAtom(chain, ruData, chain.bands[0].id)
+        id1 = chain.bands[0].atoms[1].id
 
         then:
         chain.bands.size() == 3
         chain.bands[0].atoms.size() == 2
-        chain.bands[0].atoms[0].id == id0
+        chain.bands[0].atoms*.id == [id0, id1]
 
-        when:
-        id1 = chain.bands[0].atoms[1].id
+        when: "moving a non-singular atom from a band to a band of the same type"
         chainsManager.moveToBand(chain, id0, chain.bands[2].id, 0)
 
         then:
