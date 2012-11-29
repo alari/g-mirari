@@ -25,7 +25,8 @@ class LinkStrategySpec extends IntegrationSpec {
         Atom atom = atomsManager.build(data)
         then:
         atom.type == "link"
-        atom.externalId == "http://ya.ru"
+        atom.externalId == "ya.ru"
+        atom.externalUrl == "http://ya.ru"
     }
 
     void "wrong url doesnt match anything"() {

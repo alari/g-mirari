@@ -10,6 +10,8 @@ import java.util.Map;
  * @since 11/13/12 11:41 PM
  */
 public interface Atom extends StringIdContainer {
+    static final String TEXT_MAIN = "main";
+
     public String getTitle();
 
     public void setTitle(String title);
@@ -19,9 +21,13 @@ public interface Atom extends StringIdContainer {
 
     public void setType(String type);
 
+    public Map<String, String> getTexts();
+
     public String getText();
 
     public void setText(String text);
+
+    public void setTexts(Map<String, String> texts);
 
     public String getExternalId();
 
@@ -43,6 +49,10 @@ public interface Atom extends StringIdContainer {
 
     public void setLastUpdated(Date lastUpdated);
 
+    public String getExternalUrl();
+
+    public void setExternalUrl(String externalUrl);
+
     public static interface Push extends Atom {
         public File getFile();
 
@@ -52,9 +62,6 @@ public interface Atom extends StringIdContainer {
 
         public void setOriginalFilename(String originalFilename);
 
-        public String getExternalUrl();
-
-        public void setExternalUrl(String externalUrl);
 
         public URL getUrl();
 

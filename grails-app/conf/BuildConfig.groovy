@@ -52,8 +52,8 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ":hibernate:$grailsVersion"
-        runtime ":jquery:1.8.0"
-        runtime ":resources:1.1.6"
+        runtime ":jquery:latest.integration"
+        runtime ":resources:latest.integration"
 
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
@@ -62,9 +62,9 @@ grails.project.dependency.resolution = {
 
         build ":tomcat:$grailsVersion"
 
-        runtime ":database-migration:1.1"
+        runtime ":database-migration:latest.integration"
 
-        compile ':cache:1.0.0'
+        compile ':cache:latest.integration'
 
         test ':spock:latest.integration'
     }

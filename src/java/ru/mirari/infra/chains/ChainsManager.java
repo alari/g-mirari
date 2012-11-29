@@ -385,8 +385,62 @@ public class ChainsManager {
      * @param atomId
      * @param moveToPosition
      */
-    public void moveAtom(Chain chain, String atomId, int moveToPosition) {
+    public void moveAtom(Chain chain, String atomId, int moveToPosition) throws NotFoundInChainException, InstantiationException, IllegalAccessException {
+        // left position index in a band
+        int bandOffset = 0;
+        // right position index in a band
+        int bandEdge = 0;
 
+        // Where an atom is to be placed to
+        Band targetBand = null;
+        int targetBandPosition = 0;
+
+        // Source info
+        Band sourceBand = null;
+        int sourceBandPosition = 0;
+
+        // Iterating through bands to find source and target
+        for (Band b : chain.getBands()) {
+            bandEdge += b.getAtoms().size();
+            if (moveToPosition >= bandOffset && moveToPosition < bandEdge) {
+                targetBand = b;
+                targetBandPosition = moveToPosition - bandOffset;
+            }
+            if (sourceBand != null && targetBand != null) {
+                break;
+            }
+            sourceBandPosition = 0;
+            for (Atom a : b.getAtoms()) {
+                if (a.getId().equalsIgnoreCase(atomId)) {
+                    sourceBand = b;
+                    break;
+                }
+                ++sourceBandPosition;
+            }
+            bandOffset = bandEdge;
+        }
+
+        // Source not found
+        if (sourceBand == null) {
+            throw new NotFoundInChainException();
+        }
+
+        // Target not found -- moving to the end of a chain
+        if (targetBand == null) {
+            moveToBand(chain, atomId, chain.getBands().get(chain.getBands().size() - 1).getId());
+            return;
+        }
+
+        // Moving inside a single band
+        if (targetBand == sourceBand) {
+            if (targetBandPosition != sourceBandPosition) {
+                moveInList(targetBand.getAtoms(), atomId, targetBandPosition);
+            }
+            return;
+        }
+
+        // Moving to another band
+        moveToBand(chain, atomId, targetBand.getId(), targetBandPosition);
     }
 
     /**

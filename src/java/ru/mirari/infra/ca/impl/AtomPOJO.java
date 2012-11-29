@@ -5,6 +5,7 @@ import ru.mirari.infra.ca.Atom;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,9 +17,10 @@ public class AtomPOJO implements Atom {
     private String id;
     private String type;
 
-    private String text;
     private String externalId;
+    private String externalUrl;
 
+    private Map<String, String> texts;
     private Map<String, String> sounds;
     private Map<String, String> images;
 
@@ -28,13 +30,12 @@ public class AtomPOJO implements Atom {
     static public class Push extends AtomPOJO implements Atom.Push {
         private File file;
         private String originalFilename;
-        private String externalUrl;
 
         private URL url;
         private String fileType;
 
         public String toString() {
-            return "Atom.Push:"+this.getId();
+            return "Atom.Push:" + this.getId();
         }
 
         public File getFile() {
@@ -51,14 +52,6 @@ public class AtomPOJO implements Atom {
 
         public void setOriginalFilename(String originalFilename) {
             this.originalFilename = originalFilename;
-        }
-
-        public String getExternalUrl() {
-            return externalUrl;
-        }
-
-        public void setExternalUrl(String externalUrl) {
-            this.externalUrl = externalUrl;
         }
 
         public URL getUrl() {
@@ -78,8 +71,19 @@ public class AtomPOJO implements Atom {
         }
     }
 
+    public String getText() {
+        return texts.get(TEXT_MAIN);
+    }
+
+    public void setText(String text) {
+        if (texts == null) {
+            texts = new HashMap<String, String>();
+        }
+        texts.put(TEXT_MAIN, text);
+    }
+
     public String toString() {
-        return "Atom:"+id;
+        return "Atom:" + id;
     }
 
     public String getTitle() {
@@ -106,12 +110,12 @@ public class AtomPOJO implements Atom {
         this.type = type;
     }
 
-    public String getText() {
-        return text;
+    public Map<String, String> getTexts() {
+        return texts;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setTexts(Map<String, String> texts) {
+        this.texts = texts;
     }
 
     public String getExternalId() {
@@ -152,5 +156,13 @@ public class AtomPOJO implements Atom {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getExternalUrl() {
+        return externalUrl;
+    }
+
+    public void setExternalUrl(String externalUrl) {
+        this.externalUrl = externalUrl;
     }
 }

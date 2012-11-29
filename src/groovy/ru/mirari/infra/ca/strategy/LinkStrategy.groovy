@@ -47,7 +47,8 @@ class LinkStrategy extends AtomStrategy {
             } catch (Exception e) {
                 return
             }
-            atom.externalId = data.url.toString()
+            atom.externalUrl = data.url.toString()
+            atom.externalId = atom.externalUrl.substring(data.url.protocol.size() + 3)
         }
     }
 

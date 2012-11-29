@@ -316,7 +316,39 @@ class ChainsManagerSpec extends IntegrationSpec {
     }
 
     void "we may set position of an atom in a chain to move it between bands, split, replace or something"() {
-        // TODO: implement test
+        given:
+        Chain chain = threeBandChain
+        List<List<String>> atoms = chain.bands*.atoms.id
+
+        when: "not moving an atom"
+        chainsManager.moveAtom(chain, atoms[0][0], 0)
+
+        then:
+        chain.bands*.atoms.id == atoms
+
+        when: "moving to the end"
+        chainsManager.moveAtom(chain, atoms[0][0], 10)
+
+        then:
+        chain.bands*.atoms.id == [atoms[1], [atoms[2][0], atoms[0][0]]]
+
+        when: "moving to split"
+        chainsManager.moveAtom(chain, atoms[0][0], 1)
+
+        then:
+        chain.bands*.atoms.id == [[atoms[1][0]], [atoms[0][0]], [atoms[1][1], atoms[1][2]], [atoms[2][0]]]
+
+        when: "moving inside a band"
+        chainsManager.moveAtom(chain, atoms[1][1], 3)
+
+        then:
+        chain.bands*.atoms.id == [[atoms[1][0]], [atoms[0][0]], [atoms[1][2], atoms[1][1]], [atoms[2][0]]]
+
+        when: "looking to unexistent source"
+        chainsManager.moveAtom(chain, atoms[1][1] + "x", 3)
+
+        then:
+        thrown(NotFoundInChainException)
     }
 
 

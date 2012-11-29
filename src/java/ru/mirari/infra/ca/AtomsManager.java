@@ -92,6 +92,7 @@ public class AtomsManager implements ApplicationContextAware {
      * @param data user given data
      */
     private void prepareExtendedInfo(Atom.Push data) {
+        // Preparing external url info
         if (data.getExternalUrl() != null && !data.getExternalUrl().isEmpty()) {
             String externalUrl = data.getExternalUrl();
             if (externalUrl.startsWith("//")) {
@@ -105,6 +106,7 @@ public class AtomsManager implements ApplicationContextAware {
                 data.setExternalUrl(null);
             }
         }
+        // Preparing uploaded file info
         if (data.getFile() != null) {
             try {
                 data.setFileType(Files.probeContentType(data.getFile().toPath()));
