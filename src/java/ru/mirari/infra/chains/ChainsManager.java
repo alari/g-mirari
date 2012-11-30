@@ -13,6 +13,7 @@ import ru.mirari.infra.chains.impl.ChainPOJO;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author alari
@@ -444,6 +445,17 @@ public class ChainsManager {
     }
 
     /**
+     * Sets band style
+     * @param chain
+     * @param bandId
+     * @param style
+     * @throws NotFoundInChainException
+     */
+    public void setBandStyle(Chain chain, String bandId, Map<String,String> style) throws NotFoundInChainException {
+        getBand(chain, bandId).setStyles(style);
+    }
+
+    /**
      * Routine to move objects in list
      *
      * @param list
@@ -558,7 +570,7 @@ public class ChainsManager {
     private Band copyBand(Chain chain, Band source) throws InstantiationException, IllegalAccessException {
         Band band = createBand(chain);
         band.setType(source.getType());
-        band.setStyle(source.getStyle());
+        band.setStyles(source.getStyles());
         return band;
     }
 }

@@ -4,6 +4,7 @@ import ru.mirari.infra.ca.Atom;
 import ru.mirari.infra.chains.Band;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author alari
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class BandPOJO implements Band {
     private String id;
-    private String style;
+    private Map<String,String> styles;
     private String type;
     private List<Atom> atoms;
 
@@ -19,12 +20,12 @@ public class BandPOJO implements Band {
         return "Band:"+id;
     }
 
-    public String getStyle() {
-        return style;
+    public Map<String, String> getStyles() {
+        return styles;
     }
 
-    public void setStyle(String style) {
-        this.style = style;
+    public void setStyles(Map<String, String> styles) {
+        this.styles = styles;
     }
 
     public String getType() {

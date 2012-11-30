@@ -11,4 +11,5 @@ out/
 .settings
 web-app/storage
 web-app/f
+infra-ca/web-app/f
 devDb*

@@ -8,6 +8,7 @@ grails.project.source.level = 1.7
 
 grails.plugin.location.'infra-file-storage' = "infra-file-storage"
 grails.plugin.location.'infra-images' = "infra-images"
+grails.plugin.location.'infra-ca' = "infra-ca"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -33,17 +34,11 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-
-        // For pegdown markdown
-        mavenRepo "http://scala-tools.org/repo-releases"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.20'
-
-        compile 'org.pegdown:pegdown:latest.release'
-        compile "org.jsoup:jsoup:latest.release"
 
         compile "com.fasterxml.jackson.core:jackson-databind:latest.release"
         compile "com.fasterxml.jackson.core:jackson-annotations:latest.release"

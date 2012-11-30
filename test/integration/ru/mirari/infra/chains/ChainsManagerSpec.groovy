@@ -285,9 +285,9 @@ class ChainsManagerSpec extends IntegrationSpec {
         String id0 = chain.bands[0].id
         String id1 = chain.bands[1].id
         String id2 = chain.bands[2].id
-        String style0 = chain.bands[0].style
-        String style1 = chain.bands[1].style
-        String style2 = chain.bands[2].style
+        def style0 = chain.bands[0].styles
+        def style1 = chain.bands[1].styles
+        def style2 = chain.bands[2].styles
 
         when: "moving atom to split an another typed band"
         chainsManager.moveToBand(chain, chain.bands[0].atoms[0].id, chain.bands[1].id, 1)
@@ -296,7 +296,7 @@ class ChainsManagerSpec extends IntegrationSpec {
         chain.bands*.atoms*.size() == [1, 1, 2, 1]
         !(chain.bands[2].id in [id0, id1, id2])
         chain.bands*.id == [id1, id0, chain.bands[2].id, id2]
-        chain.bands[2].style == style1
+        chain.bands[2].styles == style1
 
         when: "moving an atom into beginning of another typed band, after a band of correct type, uniting bands"
         id2 = chain.bands[2].id
@@ -349,6 +349,10 @@ class ChainsManagerSpec extends IntegrationSpec {
 
         then:
         thrown(NotFoundInChainException)
+    }
+
+    void "changing band' style"() {
+
     }
 
 
