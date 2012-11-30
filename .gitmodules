@@ -4,3 +4,6 @@
 [submodule "infra-images"]
 	path = infra-images
 	url = git@github.com:alari/infra-images.git
+[submodule "infra-ca"]
+	path = infra-ca
+	url = git@github.com:alari/infra-ca.git
