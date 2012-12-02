@@ -9,6 +9,7 @@ grails.project.source.level = 1.7
 grails.plugin.location.'infra-file-storage' = "infra-file-storage"
 grails.plugin.location.'infra-images' = "infra-images"
 grails.plugin.location.'infra-ca' = "infra-ca"
+grails.plugin.location.'infra-ui-ca' = "infra-ui-ca"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -26,7 +27,7 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
 
-        mavenLocal()
+        mavenRepo "http://artifactory.dev/repo"
         mavenCentral()
 
         // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
