@@ -1,0 +1,23 @@
+<div ng-controller="AtomQueryCtr">
+    <div class="row ca-atom" ng-repeat="atom in atoms" ng-include src="tpls.atom" ui-animate>
+    </div>
+</div>
+<style>
+    .ca-atom {
+        transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        -webkit-transition: all 0.5s ease;
+        background: lightblue;
+        max-height: 1000px; /* 1000px works too */
+        overflow: hidden;
+        padding: 5px;
+    }
+
+        /* The 'hidden' state to transition from & to */
+    .ca-atom.ui-animate {
+        opacity: 0;
+        max-height: 0;
+        padding: 0 5px;
+    }
+</style>

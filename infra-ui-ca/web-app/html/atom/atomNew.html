@@ -1,0 +1,42 @@
+<form class="form-horizontal" ng-controller="NewAtomCtr">
+
+    <div class="control-group">
+        <label class="control-label">title</label>
+
+        <div class="controls">
+            <input placeholder="title" ng-model="newAtom.title"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">
+            file</label>
+
+        <div class="controls">
+            <input type="file" name="file" data-url="/rest/creativeAtom" ui-jq="fileupload"
+                   ui-options="{dataType:'json',add:pushFile,done:fileDone}" multiple/></div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">
+            external url </label>
+
+        <div class="controls">
+            <input placeholder="external url" ng-model="newAtom.externalUrl"/></div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">
+            text </label>
+
+        <div class="controls">
+            <textarea cols="30" ng-model="newAtom.text" ui-jq="autoResize"></textarea></div>
+    </div>
+
+
+    <div class="control-group">
+        <div class="controls">
+            <button ng-click="push()" class="btn">Создать</button>
+        </div>
+    </div>
+</form>

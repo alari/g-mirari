@@ -1,0 +1,12 @@
+<div ng-controller="AtomCtr" ui-if="atom.id" class="well">
+    <h1 ui-if="!atom.processUpdate && atom.title">{{atom.title}}</h1>
+
+    <h1 ui-if="atom.processUpdate"><input type="text" ng-model="atom.title"></h1>
+
+    <div ng-include src="tpls.atomType(atom)"></div>
+
+    <div>
+        <button class="btn btn-info" ng-click="update()">edit me</button>
+        <button class="btn btn-danger" ng-click="delete()">delete</button>
+    </div>
+</div>
