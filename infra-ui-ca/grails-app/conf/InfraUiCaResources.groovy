@@ -1,22 +1,22 @@
 modules = {
-    'ca-ui' {
-        resource plugin: 'infra-ui-ca', url: 'coffee/ca-ui.coffee'
-        dependsOn "angular", "angular-ui", 'jquery-file-upload', 'mediaelementplayer', 'autoResize', 'ca-base'
-    }
-    'ca-CreativeAtom' {
-        resource plugin: 'infra-ui-ca', url: 'coffee/ca-CreativeAtom.coffee'
-        dependsOn 'angular', 'ca-base'
-    }
-    'ca-CreativeChain' {
-        resource plugin: 'infra-ui-ca', url: 'coffee/ca-CreativeChain.coffee'
-        dependsOn 'angular', 'ca-base'
-    }
-    'ca-app' {
-        dependsOn 'ca-ui', 'ca-CreativeAtom', 'ca-CreativeChain', 'ca-base'
-    }
-    'ca-base' {
-        resource plugin: 'infra-ui-ca', url: 'coffee/ca-base.coffee'
+    'ca.base' {
+        resource plugin: 'infra-ui-ca', url: 'coffee/ca_base.coffee'
         dependsOn 'angular'
+        defaultBundle 'ca'
+    }
+    'ca.render' {
+        resource plugin: 'infra-ui-ca', url: 'coffee/ca_render.coffee'
+        dependsOn "angular", "angular-ui", 'jquery-file-upload', 'mediaelementplayer', 'autoResize', 'ca.base'
+        defaultBundle 'ca'
+    }
+    'ca.ctr' {
+        resource plugin: 'infra-ui-ca', url: 'coffee/ca_ctr.coffee'
+        dependsOn 'angular', 'ca.base', 'ca.render'
+        defaultBundle 'ca'
+    }
+    'ca.app' {
+        dependsOn 'ca.base', 'ca.render', 'ca.ctr'
+        defaultBundle 'ca'
     }
 
 /**
@@ -34,16 +34,19 @@ modules = {
         resource plugin: 'infra-ui-ca', url: "vendor/blueimp-jQuery-File-Upload/js/vendor/jquery.ui.widget.js"
         resource plugin: 'infra-ui-ca', url: "vendor/blueimp-jQuery-File-Upload/js/jquery.fileupload.js"
         dependsOn "jquery"//, "jquery-ui"
+        defaultBundle 'ca'
     }
 
     'mediaelementplayer' {
         resource plugin: 'infra-ui-ca', url: "vendor/mediaelement/mediaelement-and-player.min.js"
         resource plugin: 'infra-ui-ca', url: "vendor/mediaelement/mediaelementplayer.min.css"
         dependsOn "jquery"
+        defaultBundle 'ca'
     }
 
     'autoResize' {
         resource plugin: 'infra-ui-ca', url: "vendor/autoResize/autoResize.js"
         dependsOn 'jquery'
+        defaultBundle 'ca'
     }
 }

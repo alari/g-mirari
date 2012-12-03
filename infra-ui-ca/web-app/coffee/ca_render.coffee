@@ -1,10 +1,12 @@
-m = angular.module("ca.ui", ['ui', 'ca.base', 'ca.CreativeAtom'])
+m = angular.module("ca_render", ['ui', 'ca_base'])
+
 m.directive "caSound", (caUrls)->
   (scope, element, attrs)->
     element.attr "src", scope.$eval(attrs['caSound'])
     $(element).mediaelementplayer
       pluginPath: caUrls.mediaelementPluginPath
       src: scope.$eval("atom.sounds['mpeg']")
+
 m.directive "caRussiaRu", ->
   (scope, element, attrs)->
     externalId = scope.$eval(attrs['russiaRu'])

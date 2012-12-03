@@ -1,10 +1,6 @@
-m = angular.module("ca.CreativeAtom", ['ngResource', 'ca.base'])
-#REST resource
-m.factory 'CreativeAtom', ($resource, caUrls)->
-  $resource caUrls.restResource
+m = angular.module "ca_ctr", ['ca_base', 'ca_render']
 
-#single atom render controller
-m.controller "AtomCtr", ['$scope', 'CreativeAtom', 'caUrls', '$rootScope', ($scope, CreativeAtom, caUrls, $rootScope)->
+m.controller "AtomCtr", ['$scope', 'CreativeAtom', 'caUrls', ($scope, CreativeAtom, caUrls)->
   atom = new CreativeAtom($scope.atom)
   $scope.update = ->
     if(atom.processUpdate)
@@ -35,7 +31,6 @@ m.controller "AtomCtr", ['$scope', 'CreativeAtom', 'caUrls', '$rootScope', ($sco
         atom.processUpdate = false
 ]
 
-#new atom form handler
 m.controller "NewAtomCtr", ['$scope', 'CreativeAtom', ($scope, CreativeAtom)->
   renewAtom = ->
     $scope.newAtom = new CreativeAtom()
@@ -59,11 +54,4 @@ m.controller "NewAtomCtr", ['$scope', 'CreativeAtom', ($scope, CreativeAtom)->
     $scope.$apply ->
       pushAtom(new CreativeAtom(data.result))
       renewAtom()
-
-
 ]
-
-#queried atoms controller
-m.controller("AtomQueryCtr", ['$scope', 'CreativeAtom', ($scope, CreativeAtom)->
-  $scope.atoms = $scope.chain.atoms || []
-])
