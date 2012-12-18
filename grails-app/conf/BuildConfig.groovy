@@ -62,6 +62,6 @@ grails.project.dependency.resolution = {
 
         compile ':cache:latest.integration'
 
-        test ':spock:latest.integration'
+        test ':spock:latest.release'
     }
 }
