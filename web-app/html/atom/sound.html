@@ -1,0 +1,4 @@
+<audio ca-sound="atom.sounds['mpeg']"></audio>
+
+<input ui-if="atom.processUpdate" type="file" name="file" ui-jq="fileupload"
+       ui-options="{dataType:'json',add:updateFile(atom),done:updateFileDone(atom)}"/>

@@ -6,16 +6,14 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
-grails.plugin.location.'infra-file-storage' = "infra-file-storage"
-grails.plugin.location.'infra-images' = "infra-images"
-grails.plugin.location.'infra-ca' = "infra-ca"
-grails.plugin.location.'infra-ui-ca' = "infra-ui-ca"
+//grails.plugin.location.'infra-ui-ca' = "infra-ui-ca"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
         // specify dependency exclusions here; for example, uncomment this to disable ehcache:
         // excludes 'ehcache'
+        excludes 'hibernate'
     }
     log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -24,44 +22,31 @@ grails.project.dependency.resolution = {
         inherits true // Whether to inherit repository definitions from plugins
 
         grailsPlugins()
-        grailsHome()
         grailsCentral()
-
-        mavenRepo "http://artifactory.dev/repo"
         mavenCentral()
 
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://mvn.quonb.org/repo"
+        grailsRepo "http://mvn.quonb.org/repo", "quonb"
     }
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-
-        // runtime 'mysql:mysql-connector-java:5.1.20'
-
         compile "com.fasterxml.jackson.core:jackson-databind:latest.release"
         compile "com.fasterxml.jackson.core:jackson-annotations:latest.release"
         compile "com.fasterxml.jackson.core:jackson-core:latest.release"
+
+        test("org.spockframework:spock-grails-support:0.7-groovy-2.0")
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
-        runtime ":jquery:latest.integration"
-        runtime ":resources:latest.integration"
-
-        // Uncomment these (or add new ones) to enable additional resources capabilities
-        //runtime ":zipped-resources:1.0"
-        //runtime ":cached-resources:1.0"
-        //runtime ":yui-minify-resources:0.1.4"
-
         build ":tomcat:$grailsVersion"
 
-        runtime ":database-migration:latest.integration"
+        //runtime ":resources:1.2.RC2"
 
-        compile ':cache:latest.integration'
+        compile ":infra-ca:0.1-SNAPSHOT"
 
-        test ':spock:latest.release'
+        compile ":mongodb:1.1.0.GA"
+
+        test(":spock:0.7") {
+            exclude "spock-grails-support"
+        }
     }
 }
