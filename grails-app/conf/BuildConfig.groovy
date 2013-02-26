@@ -42,6 +42,7 @@ grails.project.dependency.resolution = {
         //runtime ":resources:1.2.RC2"
 
         compile ":infra-ca:0.1-SNAPSHOT"
+        compile ":infra-chains:0.1-SNAPSHOT"
 
         compile ":mongodb:1.1.0.GA"
 
